@@ -1,17 +1,6 @@
 /*
- * Modified by Paul Derrien
- * Version: 0.3.10
- * Made By Robin Kuiper
- * Skype: RobinKuiper.eu
- * Discord: Atheos#1095
- * My Discord Server: https://discord.gg/AcC9VME
- * Roll20: https://app.roll20.net/users/1226016/robin
- * Roll20 Thread: https://app.roll20.net/forum/post/6252784/script-statusinfo
- * Roll20 Wiki: https://wiki.roll20.net/Script:StatusInfo
- * Github: https://github.com/RobinKuiper/Roll20APIScripts
- * Reddit: https://www.reddit.com/user/robinkuiper/
- * Patreon: https://patreon.com/robinkuiper
- * Paypal.me: https://www.paypal.me/robinkuiper
+ * Version: 0.3.10 Made By Robin Kuiper
+ * Modified Version: 0.3.11 Modified By Paul Derrien
  * 
  * COMMANDS (with default command):
  * !condition [CONDITION] - Shows condition.
@@ -24,11 +13,6 @@
  * 
  * !condition config export - Exports the config (with conditions).
  * !condition config import [json] - Import the given config (with conditions).
- * 
- * TODO:
- * Icon span
- * whisper system
- * stylings
 */
 
 var StatusInfo = StatusInfo || (function() {
@@ -48,22 +32,9 @@ var StatusInfo = StatusInfo || (function() {
     conditionStyle = "background-color: #fff; border: 1px solid #000; padding: 5px; border-radius: 5px;",
     conditionButtonStyle = "text-decoration: underline; background-color: #fff; color: #000; padding: 0",
     listStyle = 'list-style: none; padding: 0; margin: 0;',
-    /* These are no longer needed because url image is in getCampaignMarkers
-    icon_image_positions = {red:"#C91010",blue:"#1076C9",green:"#2FC910",brown:"#C97310",purple:"#9510C9",pink:"#EB75E1",yellow:"#E5EB75",dead:"X",skull:0,sleepy:34,"half-heart":68,"half-haze":102,interdiction:136,snail:170,"lightning-helix":204,spanner:238,"chained-heart":272,"chemical-bolt":306,"death-zone":340,"drink-me":374,"edge-crack":408,"ninja-mask":442,stopwatch:476,"fishing-net":510,overdrive:544,strong:578,fist:612,padlock:646,"three-leaves":680,"fluffy-wing":714,pummeled:748,tread:782,arrowed:816,aura:850,"back-pain":884,"black-flag":918,"bleeding-eye":952,"bolt-shield":986,"broken-heart":1020,cobweb:1054,"broken-shield":1088,"flying-flag":1122,radioactive:1156,trophy:1190,"broken-skull":1224,"frozen-orb":1258,"rolling-bomb":1292,"white-tower":1326,grab:1360,screaming:1394,grenade:1428,"sentry-gun":1462,"all-for-one":1496,"angel-outfit":1530,"archery-target":1564},*/
-
-    /* These names are rebuilt in getCampaignMarkers
-    markers = ['blue', 'brown', 'green', 'pink', 'purple', 'red', 'yellow', '-', 'all-for-one', 'angel-outfit', 'archery-target', 'arrowed', 'aura', 'back-pain', 'black-flag', 'bleeding-eye', 'bolt-shield', 'broken-heart', 'broken-shield', 'broken-skull', 'chained-heart', 'chemical-bolt', 'cobweb', 'dead', 'death-zone', 'drink-me', 'edge-crack', 'fishing-net', 'fist', 'fluffy-wing', 'flying-flag', 'frozen-orb', 'grab', 'grenade', 'half-haze', 'half-heart', 'interdiction', 'lightning-helix', 'ninja-mask', 'overdrive', 'padlock', 'pummeled', 'radioactive', 'rolling-bomb', 'screaming', 'sentry-gun', 'skull', 'sleepy', 'snail', 'spanner',   'stopwatch','strong', 'three-leaves', 'tread', 'trophy', 'white-tower'],
     shaped_conditions = ['blinded', 'charmed', 'deafened', 'frightened', 'grappled', 'incapacitated', 'invisible', 'paralyzed', 'petrified', 'poisoned', 'prone', 'restrained', 'stunned', 'unconscious'],
-    */
-
-    //New variable to replace icon_image_positions
-    //It is initialized with the token markers that ".get("token_markers")" does not include.
-    icon_images = [{id:100,name:'blue',url:"#1076C9"}, {id:101,name:'brown',url:"#C97310"}, {id:102,name:'green',url:"#2FC910"}, {id:103,name:'pink',url:"#EB75E1"}, {id:104,name:'purple',url:"9510C9"}, {id:105,name:'red',url:"#C91010"}, {id:106,name:'yellow',url:"E5EB75"}, {id:107,name:'dead',url:"X"}],
-
-    //Initialized with the token markers left out of ".get("token_markers")"
+    icon_images = [{id:-1,name:'blue',url:"#1076C9"}, {id:-2,name:'brown',url:"#C97310"}, {id:-3,name:'green',url:"#2FC910"}, {id:-4,name:'pink',url:"#EB75E1"}, {id:-5,name:'purple',url:"9510C9"}, {id:-6,name:'red',url:"#C91010"}, {id:-7,name:'yellow',url:"E5EB75"}, {id:0,name:'dead',url:"X"}],
     markers = ['blue','brown','green','pink','purple','red','yellow','dead'],
-
-    shaped_conditions = ['blinded', 'charmed', 'deafened', 'frightened', 'grappled', 'incapacitated', 'invisible', 'paralyzed', 'petrified', 'poisoned', 'prone', 'restrained', 'stunned', 'unconscious'],
 
     script_name = 'StatusInfo',
     state_name = 'STATUSINFO',
@@ -279,7 +250,8 @@ var StatusInfo = StatusInfo || (function() {
                     doHandled(condition_key);
                 }
 
-                handleShapedSheet(token.get('represents'), condition_key, add);
+                //This generates errors on 5e OGL sheet
+                //handleShapedSheet(token.get('represents'), condition_key, add);
             });
         });
     },
@@ -412,12 +384,12 @@ var StatusInfo = StatusInfo || (function() {
 
         iconStyle += 'width: 24px; height: 24px;';
 
-        if(ident < 100 || ident > 107) {
+        if(ident > 0) {
             iconStyle += 'background-image: url(' + link + ');'
             iconStyle += 'background-repeat: no-repeat;'
             iconStyle += 'background-position: 0px 0;'
             iconStyle += 'background-size: 24px 24px;'
-        }else if(ident === 107){
+        }else if(ident === 0){
             iconStyle += 'color: red; margin-right: 0px;';
             X = 'X';
         }else{
@@ -427,36 +399,8 @@ var StatusInfo = StatusInfo || (function() {
 
         iconStyle += style;
 
-        // TODO: Make span
         return '<div style="'+iconStyle+'">'+X+'</div>';
     },
-
-    /*getIcon = (icon, style='') => {
-        let X = '';
-        let iconStyle = ''
-
-        if(typeof icon_image_positions[icon] === 'undefined') return false;
-        //if(!icon_image_positions[icon]) return false;
-        
-        iconStyle += 'width: 24px; height: 24px;';
-
-        if(Number.isInteger(icon_image_positions[icon])){
-            iconStyle += 'background-image: url(https://roll20.net/images/statussheet.png);'
-            iconStyle += 'background-repeat: no-repeat;'
-            iconStyle += 'background-position: -'+icon_image_positions[icon]+'px 0;'
-        }else if(icon_image_positions[icon] === 'X'){
-            iconStyle += 'color: red; margin-right: 0px;';
-            X = 'X';
-        }else{
-            iconStyle += 'background-color: ' + icon_image_positions[icon] + ';';
-            iconStyle += 'border: 1px solid white; border-radius: 50%;'
-        }
-
-        iconStyle += style;
-
-        // TODO: Make span
-        return '<div style="'+iconStyle+'">'+X+'</div>';
-    },*/
 
     ucFirst = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -566,7 +510,6 @@ var StatusInfo = StatusInfo || (function() {
             let condition = state[state_name].conditions[condition_key];
             contents += makeButton(getIcon(condition.icon) || condition.name, '!' + state[state_name].config.command + ' toggle '+condition_key, buttonStyle + 'float: none; margin-right: 5px;', condition.name);
         }
-        //contents += (!show_names) ? '<br>' + makeButton('Show Names', '!' + state[state_name].config.command + ' names', buttonStyle + 'float: none;') : '<br>' + makeButton('Hide Names', '!' + state[state_name].config.command, buttonStyle + 'float: none;');
 
         makeAndSendMenu(contents, script_name + ' Menu');
     },
@@ -652,7 +595,6 @@ var StatusInfo = StatusInfo || (function() {
             state[state_name] = state[state_name] || {};
         }
         setDefaults();
-        //added to get the token markers set data of the campaign
         getCampaignMarkers();
 
         log(script_name + ' Ready! Command: !'+state[state_name].config.command);
@@ -702,9 +644,6 @@ var StatusInfo = StatusInfo || (function() {
     },
 
     setDefaults = (reset) => {
-
-        // DEVELOPER NOTE: ON CHANGE! CHECK BITCH! DENK OM OLD IMPORTS!
-
         const defaults = {
             config: {
                 command: 'condition',
