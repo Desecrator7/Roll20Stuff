@@ -1,17 +1,6 @@
 /*
- * Version 0.1.14
- * Modified by Paul Derrien
- * Made By Robin Kuiper
- * Skype: RobinKuiper.eu
- * Discord: Atheos#1095
- * My Discord Server: https://discord.gg/AcC9VME
- * Roll20: https://app.roll20.net/users/1226016/robin
- * Roll20 Wiki: https://wiki.roll20.net/Script:Concentration
- * Roll20 Thread: https://app.roll20.net/forum/post/6364317/script-concentration/?pageforid=6364317#post-6364317
- * Github: https://github.com/RobinKuiper/Roll20APIScripts
- * Reddit: https://www.reddit.com/user/robinkuiper/
- * Patreon: https://patreon.com/robinkuiper
- * Paypal.me: https://www.paypal.me/robinkuiper
+ * Originial Version 0.1.14 Made By Robin Kuiper
+ * Modified Version 0.1.15 by Paul Derrien
 */
 
 var Concentration = Concentration || (function() {
@@ -35,12 +24,9 @@ var Concentration = Concentration || (function() {
     },
     script_name = 'Concentration',
     state_name = 'CONCENTRATION',
-    /*markers = ['blue', 'brown', 'green', 'pink', 'purple', 'red', 'yellow', '-', 'all-for-one', 'angel-outfit', 'archery-target', 'arrowed', 'aura', 'back-pain', 'black-flag', 'bleeding-eye', 'bolt-shield', 'broken-heart', 'broken-shield', 'broken-skull', 'chained-heart', 'chemical-bolt', 'cobweb', 'dead', 'death-zone', 'drink-me', 'edge-crack', 'fishing-net', 'fist', 'fluffy-wing', 'flying-flag', 'frozen-orb', 'grab', 'grenade', 'half-haze', 'half-heart', 'interdiction', 'lightning-helix', 'ninja-mask', 'overdrive', 'padlock', 'pummeled', 'radioactive', 'rolling-tomb', 'screaming', 'sentry-gun', 'skull', 'sleepy', 'snail', 'spanner',   'stopwatch','strong', 'three-leaves', 'tread', 'trophy', 'white-tower'],*/
-
-    //Initialized with the token markers left out of ".get("token_markers")"
     markers = ['blue','brown','green','pink','purple','red','yellow','dead'],
 
-    //New function to get all the token marker sets data
+    //this grabs all the token marker set data
     getCampaignMarkers = () => {
         const campaignMarkers = JSON.parse(Campaign().get("token_markers"));
         
@@ -50,6 +36,7 @@ var Concentration = Concentration || (function() {
     },
 
     handleInput = (msg) => {
+        //This only works for spells that display spellcards
         if(state[state_name].config.auto_add_concentration_marker && msg && msg.rolltemplate && msg.rolltemplate === 'spell' && (msg.content.includes("{{concentration=1}}"))){
             handleConcentrationSpellCast(msg);
         }
@@ -80,7 +67,6 @@ var Concentration = Concentration || (function() {
                             state[state_name].config[key] = value;
 
                             if(key === 'bar'){
-                                //registerEventHandlers();
                                 message = '<span style="color: red">The API Library needs to be restarted for this to take effect.</span>';
                             }
                         }
@@ -255,7 +241,6 @@ var Concentration = Concentration || (function() {
             }
 
             if(state[state_name].config.auto_roll_save){
-                //&{template:default} {{name='+obj.get('name')+' - Concentration Save}} {{Modifier='+con_save_mod+'}} {{Roll=[[1d20cf<'+(DC-con_save_mod-1)+'cs>'+(DC-con_save_mod-1)+'+'+con_save_mod+']]}} {{DC='+DC+'}}
                 roll(obj.get('represents'), DC, con_save_mod, obj.get('name'), target, state[state_name].advantages[obj.get('represents')]);
             }else{
                 makeAndSendMenu(chat_text, '', target);
@@ -350,7 +335,6 @@ var Concentration = Concentration || (function() {
             sendToButton = makeButton(state[state_name].config.send_reminder_to, '!' + state[state_name].config.command + ' config send_reminder_to|?{Send To|Everyone,everyone|Character,character|GM,gm}', styles.button + styles.float.right),
             addConMarkerButton = makeButton(state[state_name].config.auto_add_concentration_marker, '!' + state[state_name].config.command + ' config auto_add_concentration_marker|'+!state[state_name].config.auto_add_concentration_marker, styles.button + styles.float.right),
             autoRollButton = makeButton(state[state_name].config.auto_roll_save, '!' + state[state_name].config.command + ' config auto_roll_save|'+!state[state_name].config.auto_roll_save, styles.button + styles.float.right),
-            //advantageButton = makeButton(state[state_name].config.advantage, '!' + state[state_name].config.command + ' config advantage|'+!state[state_name].config.advantage, styles.button + styles.float.right),
             bonusAttrButton = makeButton(state[state_name].config.bonus_attribute, '!' + state[state_name].config.command + ' config bonus_attribute|?{Attribute|'+state[state_name].config.bonus_attribute+'}', styles.button + styles.float.right),
             showRollButtonButton = makeButton(state[state_name].config.show_roll_button, '!' + state[state_name].config.command + ' config show_roll_button|'+!state[state_name].config.show_roll_button, styles.button + styles.float.right),
 
@@ -366,10 +350,6 @@ var Concentration = Concentration || (function() {
             resetButton = makeButton('Reset', '!' + state[state_name].config.command + ' reset', styles.button + styles.fullWidth),
 
             title_text = (first) ? script_name + ' First Time Setup' : script_name + ' Config';
-
-        /*if(state[state_name].config.auto_roll_save){
-            listItems.push('<span style="'+styles.float.left+'">Advantage:</span> ' + advantageButton);
-        }*/
 
         if(state[state_name].config.auto_roll_save){
             listItems.push('<span style="'+styles.float.left+'">Bonus Attribute:</span> ' + bonusAttrButton)
@@ -441,7 +421,6 @@ var Concentration = Concentration || (function() {
             state[state_name] = state[state_name] || {};
         }
         setDefaults();
-        //added to get the token markers set data of the campaign
         getCampaignMarkers();
 
         log(script_name + ' Ready! Command: !'+state[state_name].config.command);
